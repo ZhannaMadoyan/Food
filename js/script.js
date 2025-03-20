@@ -78,21 +78,29 @@ document.querySelector('.modal__content form').addEventListener('submit', functi
 });
 
 const modal = document.querySelector('.modal');
-const openModalButton = document.querySelector('.btn_white');
 const closeModalButton = document.querySelector('.modal__close');
 
-openModalButton.addEventListener('click', () => {
+// Ֆունկցիա մոդալը բացելու համար
+function openModal() {
     modal.style.display = 'block';
-});
+}
 
-closeModalButton.addEventListener('click', () => {
+// Ֆունկցիա մոդալը փակելու համար
+function closeModal() {
     modal.style.display = 'none';
+}
+
+// Բացել մոդալը երկու կոճակների համար
+document.querySelectorAll('.btn_white, .btn_dark').forEach(button => {
+    button.addEventListener('click', openModal);
 });
 
+// Փակել մոդալը փակելու կոճակով
+closeModalButton.addEventListener('click', closeModal);
+
+// Փակել մոդալը պատուհանից դուրս կտտացնելիս
 window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
+    if (event.target === modal) closeModal();
 });
 
 let slideIndex = 0;
