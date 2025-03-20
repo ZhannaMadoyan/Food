@@ -80,25 +80,20 @@ document.querySelector('.modal__content form').addEventListener('submit', functi
 const modal = document.querySelector('.modal');
 const closeModalButton = document.querySelector('.modal__close');
 
-// Ֆունկցիա մոդալը բացելու համար
 function openModal() {
     modal.style.display = 'block';
 }
 
-// Ֆունկցիա մոդալը փակելու համար
 function closeModal() {
     modal.style.display = 'none';
 }
 
-// Բացել մոդալը երկու կոճակների համար
 document.querySelectorAll('.btn_white, .btn_dark').forEach(button => {
     button.addEventListener('click', openModal);
 });
 
-// Փակել մոդալը փակելու կոճակով
 closeModalButton.addEventListener('click', closeModal);
 
-// Փակել մոդալը պատուհանից դուրս կտտացնելիս
 window.addEventListener('click', (event) => {
     if (event.target === modal) closeModal();
 });
