@@ -233,3 +233,63 @@ class MenuCard{
        ".menu .container",
     ).render();
     //   end
+
+   //  we are creating post request to server -start
+
+const forms = document.querySelectorAll("form");
+
+const messages = {
+  success: "Thank you! We will contact you soon",
+  failure: "Sorry, something went wrong"
+}
+
+const {success,failure} = messages;
+
+forms.forEach(form => postData(form))
+
+function postData(form){
+  form.addEventListener("submit", (e)=>{
+    e.preventDefault();
+
+    const request = new XMLHttpRequest();
+
+    request.open("POST", "server.php");
+
+    const formData = new FormData(form);
+
+    request.send(formData);
+
+    request.addEventListener("load",() => {
+      if(request.status=== 200){
+        console.log(request.response);
+        form.reset();
+        messagesModal(success);
+      }else{
+        console.log("error",request.status);
+        messagesModal(failure);
+      }
+    })
+  })
+}
+
+function messagesModal(message){
+  const prevModalDialog = document.querySelector(".modal__dialog");
+  prevModalDialog.classList.add("hide");
+  openModal();
+
+  const messageModal = document.createElement("div");
+  messageModal.classList.add("modal__dialog");
+  messageModal.innerHTML = `
+  <div class="modal__content">
+  <div data-close class="modal-close"></div>
+  <div class="modal__title">${message}</div>
+  `
+  document.querySelector(".modal").append(messageModal);
+  setTimeout(()=>{
+    messageModal.remove();
+    prevModalDialog.classList.add("show");
+    prevModalDialog.classList.remove("hide");
+  },2000)
+}
+
+//  we are creating post request to server -end
