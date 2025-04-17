@@ -1,295 +1,330 @@
-document.querySelectorAll("div").forEach((div) => {
-    if (!div.querySelector("img")) {
-        const originalStyle = {
-            fontStyle: "",
-            color: "",
-            textShadow: "",
-            transform: ""
-        };
+"use strict"
 
-        const clickHandler = () => {
-            div.style.fontStyle = "bold";
-            div.style.color = "black";
-            div.style.textShadow = "2px 2px 4px rgba(18, 143, 193, 0.85)";
-            div.style.transform = "scale(1.1)"; 
-        };
+window.addEventListener("DOMContentLoaded", function () {
+  // Tab logic start
+  const tabsHeaders = document.querySelectorAll(".tabheader__item");
+  const tabsContents = document.querySelectorAll(".tabcontent");
+  const tabsHeadersParent = document.querySelector(".tabheader__items");
 
-        const mouseLeaveHandler = () => {
-            div.style.fontStyle = originalStyle.fontStyle;
-            div.style.color = originalStyle.color;
-            div.style.textShadow = originalStyle.textShadow;
-            div.style.transform = originalStyle.transform;
-        };
 
-        div.addEventListener("click", clickHandler);
-        div.addEventListener("mouseleave", mouseLeaveHandler);
 
-        div.addEventListener("blur", () => {
-            div.style.fontStyle = originalStyle.fontStyle;
-            div.style.color = originalStyle.color;
-            div.style.textShadow = originalStyle.textShadow;
-            div.style.transform = originalStyle.transform;
-        });
+  hideTabContent();
+  showTabContent();
+
+  function hideTabContent() {
+    tabsContents.forEach(tabContent => {
+      tabContent.classList.add("hide");
+      tabContent.classList.remove("show");
+    });
+    tabsHeaders.forEach(tabHeader => tabHeader.classList.remove("tabheader__item_active"));
+  }
+
+  function showTabContent(i = 0) {
+    tabsContents[i].classList.add("show");
+    tabsContents[i].classList.remove("hide");
+    tabsHeaders[i].classList.add("tabheader__item_active");
+  }
+
+  tabsHeadersParent.addEventListener("click", (e) => {
+    if (e.target && e.target.matches(".tabheader__item")) {
+      tabsHeaders.forEach((tabHeader, index) => {
+        if (e.target === tabHeader) {
+          hideTabContent();
+          showTabContent(index);
+        }
+      });
     }
-});
+  });
+  // tab logic end 
 
-//ժամանակիհետհաշվարկ
-const initialDays = 12;
-const initialHours = 20;
-const initialMinutes = 56;
-const initialSeconds = 20;
-
-const initialTime = (initialDays * 24 * 60 * 60 * 1000) + 
-                   (initialHours * 60 * 60 * 1000) + 
-                   (initialMinutes * 60 * 1000) + 
-                   (initialSeconds * 1000);
-
-const countDownDate = new Date().getTime() + initialTime;
-
-const timerInterval = setInterval(function() {
-    const now = new Date().getTime();
-    const distance = countDownDate - now;
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("days").innerText = days;
-    document.getElementById("hours").innerText = hours;
-    document.getElementById("minutes").innerText = minutes;
-    document.getElementById("seconds").innerText = seconds;
-
-    // Եթե ժամանակը ավարտվել է
-    if (distance < 0) {
-        clearInterval(timerInterval);
-        document.querySelector(".promotion__timer .title").innerText = "Акция завершена!";
+  // timer logic start
+  const deadline = "2025-03-17"
+  function getTimeRemaining(endtime) {
+    const total = Date.parse(endtime) - Date.parse(new Date());
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(total / (1000 * 60 * 60) % 24);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    const secunds = Math.floor((total / 1000) % 60);
+    return {
+      total,
+      days,
+      hours,
+      minutes,
+      secunds,
     }
-}, 1000);
+  }
+  function setZero(n) {
+    return n >= 0 && n < 10 ? `0${n}` : n
+  }
 
-document.querySelector('.order__form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    alert('Շնորհակալություն պատվերի համար։ Մենք կապ կհաստատենք Ձեզ հետ։');
-});
+  function setClock(selector, endtime) {
+    const timer = document.querySelector(selector);
+    const daysBlock = document.querySelector("#days");
+    const hoursBlock = document.querySelector("#hours");
+    const minutesBlock = document.querySelector("#minutes");
+    const secundsBlock = document.querySelector("#seconds");
 
-document.querySelector('.modal__content form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    alert('Շնորհակալություն։ Մենք կապ կհաստատենք Ձեզ հետ։');});
-const modal = document.querySelector('.modal');
-const closeModalButton = document.querySelector('.modal__close');
+    const timerId = setInterval(upDateClock, 1000)
 
-function openModal() {
-    modal.style.display = 'block';
-}
+    function upDateClock() {
+      const { total, days, hours, minutes, secunds } = getTimeRemaining(endtime)
 
-function closeModal() {
-    modal.style.display = 'none';
-}
+      daysBlock.textContent = setZero(days)
+      hoursBlock.textContent = setZero(hours)
+      minutesBlock.textContent = setZero(minutes)
+      secundsBlock.textContent = setZero(secunds)
 
-document.querySelectorAll('.btn_white, .btn_dark').forEach(button => {
-    button.addEventListener('click', openModal);
-});
+      if (total <= 0) {
+        clearInterval(timerId)
+      }
+    }
+    upDateClock()
 
-closeModalButton.addEventListener('click', closeModal);
-
-window.addEventListener('click', (event) => {
-    if (event.target === modal) closeModal();
-});
-
-let slideIndex = 0;
-const slides = document.querySelectorAll('.offer__slide');
-const totalSlides = slides.length;
-const currentSlide = document.getElementById('current');
-const totalSlidesElement = document.getElementById('total');
-
-totalSlidesElement.textContent = totalSlides.toString().padStart(2, '0');
-
-function showSlide(index) {
-    if (index >= totalSlides) slideIndex = 0;
-    if (index < 0) slideIndex = totalSlides - 1;
-
-    slides.forEach((slide, i) => {
-        slide.style.display = i === slideIndex ? 'block' : 'none';
-    });
-
-    currentSlide.textContent = (slideIndex + 1).toString().padStart(2, '0');
-}
-
-document.querySelector('.offer__slider-prev').addEventListener('click', () => {
-    showSlide(--slideIndex);
-});
-
-document.querySelector('.offer__slider-next').addEventListener('click', () => {
-    showSlide(++slideIndex);
-});
-
-showSlide(slideIndex);
+  }
+  setClock(".timer", deadline)
+  // timer logic end
 
 
-const genderButtons = document.querySelectorAll('#gender .calculating__choose-item');
-const activityButtons = document.querySelectorAll('.calculating__choose_big .calculating__choose-item');
-const inputs = document.querySelectorAll('.calculating__choose_medium input');
-const resultElement = document.querySelector('.calculating__result span');
+  // modal loggic start 
+  const modalTrigger = document.querySelectorAll("[data-modal]");
+  const modal = document.querySelector(".modal");
+  const modalClose = document.querySelector("[data-close]");
 
-let gender = 'female';
-let activity = 1.375;
+  function openModal() {
+    modal.classList.add("show");
+    modal.classList.remove("hide");
+    document.body.style.overflow = "hidden";
+  }
 
-genderButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        genderButtons.forEach(b => b.classList.remove('calculating__choose-item_active'));
-        button.classList.add('calculating__choose-item_active');
-        gender = button.textContent.toLowerCase();
-        calculateCalories();
-    });
-});
+  function closeModal() {
+    modal.classList.add("hide");
+    modal.classList.remove("show");
+    document.body.removeAttribute("style");
+  }
 
-activityButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        activityButtons.forEach(b => b.classList.remove('calculating__choose-item_active'));
-        button.classList.add('calculating__choose-item_active');
-        activity = parseFloat(button.getAttribute('data-ratio'));
-        calculateCalories();
-    });
-});
+  modalTrigger.forEach(btn => btn.addEventListener("click", openModal))
+  modalClose.addEventListener("click", closeModal)
 
-inputs.forEach(input => {
-    input.addEventListener('input', () => {
-        calculateCalories();
-    });
-});
-
-function calculateCalories() {
-    const height = parseFloat(document.getElementById('height').value);
-    const weight = parseFloat(document.getElementById('weight').value);
-    const age = parseFloat(document.getElementById('age').value);
-
-    if (!height || !weight || !age) return;
-
-    let calories;
-    if (gender === 'female') {
-        calories = (447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * activity;
-    } else {
-        calories = (88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * activity;
+  modal.addEventListener("click", (e) => {
+    if (e.target && e.target === modal) {
+      modal.classList.add("hide");
+      modal.classList.remove("show");
+      document.body.removeAttribute("style");
     }
 
-    resultElement.textContent = Math.round(calories);
-}
+  })
 
-calculateCalories();
+  // modal logic end
 
-//class for menu card - start
-class MenuCard{
-    constructor(img, alt, title, descr, price,parentSelector){
+
+
+  //class for menu card - start
+  class MenuCard {
+    constructor(img, alt, title, descr, price, parentSelector) {
       this.img = img;
       this.alt = alt;
       this.title = title;
-      this.descr = descr; 
-      this.price  = price;
+      this.descr = descr;
+      this.price = price;
       this.parent = document.querySelector(parentSelector);
       this.transfer = 27;
       this.changeToUAH()
     }
-    changeToUAH(){
-        this.price = this.price * this.transfer;
-       }
-      render(){
-        const {img, alt, title, descr, price} = this
-        const element = document.createElement("div");
-        element.classList.add("menu__item");
-        element.innerHTML = `
-                         <img src=${img} alt=${alt}>
-                          <h3 class="menu__item-subtitle">${title}</h3>
-                          <div class="menu__item-descr">${descr}</div>
-                          <div class="menu__item-divider"></div>
-                          <div class="menu__item-price">
-                              <div class="menu__item-cost">Цена:</div>
-                              <div class="menu__item-total"><span></span>${price}грн/день</div>
-        `;
+    changeToUAH() {
+      this.price = this.price * this.transfer;
+    }
+    render() {
+      const { img, alt, title, descr, price } = this
+      const element = document.createElement("div");
+      element.classList.add("menu__item");
+      element.innerHTML = `
+                   <img src=${img} alt=${alt}>
+                    <h3 class="menu__item-subtitle">${title}</h3>
+                    <div class="menu__item-descr">${descr}</div>
+                    <div class="menu__item-divider"></div>
+                    <div class="menu__item-price">
+                        <div class="menu__item-cost">Цена:</div>
+                        <div class="menu__item-total"><span></span>${price}грн/день</div>
+  `;
       this.parent.append(element);
+    }
+  };
+
+  new MenuCard(
+    "img/tabs/vegy.jpg",
+    "vegy",
+    " Меню \"Фитнес\"",
+    "Меню \"Фитнес\" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
+    8.5,
+    ".menu .container",
+  ).render();
+
+  new MenuCard(
+    "img/tabs/elite.jpg",
+    'Меню “Премиум”',
+    ' Меню "Фитнес"',
+    'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+    8.5,
+    ".menu .container",
+  ).render();
+
+  new MenuCard(
+    "img/tabs/post.jpg",
+    'Меню “Премиум”',
+    ' Меню \"Фитнес\"',
+    'Меню \"Фитнес\" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    8.5,
+    '.menu .container',
+  ).render();
+
+
+
+
+
+  // cllas for menu card - end
+
+
+  // post request with PHP-start
+
+  const forms = document.querySelectorAll("form");
+
+  const messages = {
+    success: "Thank you! We will contact you soon",
+    failure: "Sorry, something went wrong"
+  };
+
+  const { success, failure } = messages;
+
+  forms.forEach(form => postData(form));
+
+  function postData(form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      fetch("server.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok');
+        })
+        .then(data => {
+          console.log(data);
+          form.reset();
+          messagesModal(success);
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          messagesModal(failure);
+        });
+    });
+  }
+
+  function messagesModal(message) {
+    const prevModalDialog = document.querySelector(".modal__dialog");
+    const modal = document.querySelector(".modal");
+
+    prevModalDialog.classList.add("hide");
+
+    const messageModal = document.createElement("div");
+    messageModal.classList.add("modal__dialog");
+    messageModal.innerHTML = `
+    <div class="modal__content">
+      <div data-close class="modal-close">×</div>
+      <div class="modal__title">${message}</div>
+    </div>
+  `;
+
+    modal.append(messageModal);
+
+    setTimeout(() => {
+      messageModal.remove();
+      prevModalDialog.classList.remove("hide");
+      prevModalDialog.classList.add("show");
+    }, 2000);
+  }
+})
+// post request with PHP-end
+// slayderi skizb
+const slides = document.querySelectorAll(".offer__slide");
+const prev = document.querySelector(".offer__slider-prev");
+const next = document.querySelector(".offer__slider-next");
+const current = document.querySelector("#current");
+const total = document.querySelector("#total");
+
+let slideIndex = 1;
+
+showSlides(slideIndex);
+
+total.textContent = slides.length < 10 ? `0${slides.length}` : slides.length;
+
+prev.addEventListener("click", () => slideState(-1));
+next.addEventListener("click", () => slideState(1));
+
+function showSlides(n) {
+  slideIndex = n > slides.length ? 1 : n < 1 ? slides.length : n;
+  slides.forEach(slide => slide.style.display = "none");
+  slides[slideIndex - 1].style.display = "block";
+  current.textContent = slideIndex < 10 ? `0${slideIndex}` : slideIndex;
+}
+
+function slideState(n) {
+  showSlides(slideIndex += n);
+}
+// slayderi verj
+const result = document.querySelector('.calculating__result span');
+
+let gender, height, weight, age, ratio;
+
+function calcTotal() {
+  if (!gender || !height || !weight || !age || !ratio) {
+    result.textContent = "__";
+    return;
+  }
+
+  if (gender === "male") {
+    result.textContent = Math.round(
+      (88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * ratio
+    );
+  } else if (gender === "female") {
+    result.textContent = Math.round(
+      (447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * ratio
+    );
+  } else {
+    result.textContent = "__";
+  }
+}
+
+calcTotal();
+
+function getStaticInformation(selector, activeClass) {
+  const elements = document.querySelectorAll(selector);
+
+  elements.forEach((elem) => {
+    elem.addEventListener("click", (e) => {
+      if (e.target.dataset.ratio) {
+        ratio = parseFloat(e.target.dataset.ratio);
+      } else {
+        gender = e.target.getAttribute("id");
       }
-      };
-    new MenuCard(
-        "img/tabs/vegy.jpg",
-        "vegy",
-       " Меню \"Фитнес\"",
-       "Меню \"Фитнес\" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
-       8.5,
-       ".menu .container",
-    ).render();
-    new MenuCard(
-        "img/tabs/elite.jpg",
-        "vegy",
-       " Меню \“Премиум\”",
-       "Меню \“Премиум\" - В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-       21,
-       ".menu .container",
-    ).render();
-    new MenuCard(
-        "img/tabs/post.jpg",
-        "vegy",
-       "Меню \"Постное\"",
-       "Меню \"Постное\" - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
-       16,
-       ".menu .container",
-    ).render();
-    //   end
-
-   //  we are creating post request to server -start
-
-const forms = document.querySelectorAll("form");
-
-const messages = {
-  success: "Thank you! We will contact you soon",
-  failure: "Sorry, something went wrong"
+      elements.forEach((elem) => elem.classList.remove(activeClass));
+      e.target.classList.add(activeClass);
+      calcTotal();
+    });
+  });
 }
 
-const {success,failure} = messages;
-
-forms.forEach(form => postData(form))
-
-function postData(form){
-  form.addEventListener("submit", (e)=>{
-    e.preventDefault();
-
-    const request = new XMLHttpRequest();
-
-    request.open("POST", "server.php");
-
-    const formData = new FormData(form);
-
-    request.send(formData);
-
-    request.addEventListener("load",() => {
-      if(request.status=== 200){
-        console.log(request.response);
-        form.reset();
-        messagesModal(success);
-      }else{
-        console.log("error",request.status);
-        messagesModal(failure);
-      }
-    })
-  })
-}
-
-function messagesModal(message){
-  const prevModalDialog = document.querySelector(".modal__dialog");
-  prevModalDialog.classList.add("hide");
-  openModal();
-
-  const messageModal = document.createElement("div");
-  messageModal.classList.add("modal__dialog");
-  messageModal.innerHTML = `
-  <div class="modal__content">
-  <div data-close class="modal-close"></div>
-  <div class="modal__title">${message}</div>
-  `
-  document.querySelector(".modal").append(messageModal);
-  setTimeout(()=>{
-    messageModal.remove();
-    prevModalDialog.classList.add("show");
-    prevModalDialog.classList.remove("hide");
-  },2000)
-}
-
-//  we are creating post request to server -end
+getStaticInformation("#gender div", "calculating__choose-item_active");
+getStaticInformation(
+  ".calculating__choose_big div",
+  "calculating__choose-item_active"
+);
